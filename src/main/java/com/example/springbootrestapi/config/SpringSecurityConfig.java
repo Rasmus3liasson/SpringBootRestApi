@@ -30,7 +30,7 @@ public class SpringSecurityConfig  {
         return new BCryptPasswordEncoder();
     }
 
-    /*Might remove csrf diable later on*/
+    /*Might remove csrf disable later on*/
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -38,6 +38,7 @@ public class SpringSecurityConfig  {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(HttpMethod.GET, "/api/categories").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/categories/**").hasRole("ADMIN")
                                 .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
                                 .anyRequest().denyAll()
                 )
