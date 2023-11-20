@@ -2,6 +2,8 @@ package com.example.springbootrestapi.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -28,10 +30,17 @@ public class SpringSecurityConfig  {
         return new BCryptPasswordEncoder();
     }
 
-    /*Might remove later on*/
+    /*Might remove csrf diable later on*/
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .httpBasic(Customizer.withDefaults())
+                .authorizeHttpRequests(authorize ->
+                        authorize
+                                .requestMatchers(HttpMethod.GET, "/api/categories").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
+                                .anyRequest().denyAll()
+                )
                 .csrf().disable();
         return http.build();
     }
