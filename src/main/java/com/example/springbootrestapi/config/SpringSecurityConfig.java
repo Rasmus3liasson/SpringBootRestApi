@@ -37,9 +37,12 @@ public class SpringSecurityConfig  {
                 .httpBasic(Customizer.withDefaults())
                 .authorizeHttpRequests(authorize ->
                         authorize
-                                .requestMatchers(HttpMethod.GET, "/api/categories").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.GET, "/api/categories/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.GET, "/api/categories","/api/categories/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
+
+                                .requestMatchers(HttpMethod.GET, "/api/location","/api/location/category/*").permitAll()
+
+                                .requestMatchers(HttpMethod.GET, "/api/location/userId").authenticated()
                                 .anyRequest().denyAll()
                 )
                 .csrf().disable();

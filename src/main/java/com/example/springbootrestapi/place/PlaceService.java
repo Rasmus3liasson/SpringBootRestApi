@@ -1,6 +1,9 @@
 package com.example.springbootrestapi.place;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -9,6 +12,7 @@ import java.util.Optional;
 @Service
 public class PlaceService {
     private final PlaceRepository placeRepository;
+
 
     @Autowired
     public PlaceService(PlaceRepository placeRepository) {
@@ -23,5 +27,26 @@ public class PlaceService {
         return placeRepository.findById(id);
     }
 
+    public List<PlaceEntity> getPlacesByCategory(Integer category) {
+        return placeRepository.findAll().stream().filter(p -> p.getCategoryId() == category).toList();
+    }
 
+    public List<PlaceEntity> getPlacesRelatedToUser() {
+        String userId = getCurrentUser();
+        return placeRepository.findAll().stream().filter(p -> p.getUserId().equals(userId)).toList();
+    }
+
+    public String getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth != null && auth.isAuthenticated()) {
+            Object principal = auth.getPrincipal();
+
+            if (principal instanceof UserDetails) {
+                UserDetails userDetails = (UserDetails) principal;
+                return userDetails.getUsername();
+            }
+        }
+        throw new RuntimeException("User isn't signed in");
+    }
 }

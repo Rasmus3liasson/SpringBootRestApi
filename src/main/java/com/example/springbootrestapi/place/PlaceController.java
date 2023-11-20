@@ -1,8 +1,7 @@
 package com.example.springbootrestapi.place;
 
-import com.example.springbootrestapi.place.PlaceEntity;
-import com.example.springbootrestapi.place.PlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,8 +11,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/location")
-public class LocationController {
+@RequestMapping(value = "/api/location", produces = "application/json")
+public class PlaceController {
 
     private PlaceService placeService;
 
@@ -27,6 +26,7 @@ public class LocationController {
         return placeService.getAllPlaces();
     }
 
+
     @GetMapping("/{id}")
     public Optional<PlaceEntity> getPlaceById(@PathVariable Integer id) {
         Optional<PlaceEntity> place = placeService.getPlaceById(id);
@@ -37,6 +37,18 @@ public class LocationController {
             throw new IllegalArgumentException("Place with id " + id + " does not exist");
         }
     }
+
+    @GetMapping("/category/{categoryId}")
+    public List<PlaceEntity> getPlacesRelatedToCategory(@PathVariable Integer categoryId) {
+        return placeService.getPlacesByCategory(categoryId);
+
     }
+    @GetMapping("/userId")
+    @PreAuthorize("isAuthenticated()")
+    public List<PlaceEntity> getPlacesRelatedToUser() {
+        return placeService.getPlacesRelatedToUser();
+
+    }
+}
 
 

@@ -19,7 +19,7 @@ public class PlaceEntity {
     private int categoryId;
     @Basic
     @Column(name = "user_id")
-    private int userId;
+    private String userId;
     @Basic
     @Column(name = "status")
     private Object status;
@@ -29,6 +29,12 @@ public class PlaceEntity {
     @Basic
     @Column(name = "description")
     private String description;
+    @Basic
+    @Column(name = "latitude")
+    private double latitude;
+    @Basic
+    @Column(name = "longitude")
+    private double longitude;
     @Basic
     @Column(name = "coordinates")
     private Object coordinates;
@@ -56,15 +62,15 @@ public class PlaceEntity {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setCategoryId(String categoryId) {
+        this.categoryId = Integer.parseInt(categoryId);
     }
 
-    public int getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 
@@ -92,6 +98,22 @@ public class PlaceEntity {
         this.description = description;
     }
 
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
     public Object getCoordinates() {
         return coordinates;
     }
@@ -117,8 +139,10 @@ public class PlaceEntity {
 
         if (placeId != that.placeId) return false;
         if (categoryId != that.categoryId) return false;
-        if (userId != that.userId) return false;
+        if (Double.compare(latitude, that.latitude) != 0) return false;
+        if (Double.compare(longitude, that.longitude) != 0) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (userId != null ? !userId.equals(that.userId) : that.userId != null) return false;
         if (status != null ? !status.equals(that.status) : that.status != null) return false;
         if (lastModified != null ? !lastModified.equals(that.lastModified) : that.lastModified != null) return false;
         if (description != null ? !description.equals(that.description) : that.description != null) return false;
@@ -130,13 +154,19 @@ public class PlaceEntity {
 
     @Override
     public int hashCode() {
-        int result = placeId;
+        int result;
+        long temp;
+        result = placeId;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + categoryId;
-        result = 31 * result + userId;
+        result = 31 * result + (userId != null ? userId.hashCode() : 0);
         result = 31 * result + (status != null ? status.hashCode() : 0);
         result = 31 * result + (lastModified != null ? lastModified.hashCode() : 0);
         result = 31 * result + (description != null ? description.hashCode() : 0);
+        temp = Double.doubleToLongBits(latitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(longitude);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (coordinates != null ? coordinates.hashCode() : 0);
         result = 31 * result + (createdAt != null ? createdAt.hashCode() : 0);
         return result;
