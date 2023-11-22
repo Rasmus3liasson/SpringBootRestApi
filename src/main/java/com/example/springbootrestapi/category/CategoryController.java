@@ -1,5 +1,6 @@
 package com.example.springbootrestapi.category;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class CategoryController {
 
     @PostMapping(consumes = "application/json", produces = "application/json")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<String> createCategory(@RequestBody CategoryEntity categoryEntity) {
+    public ResponseEntity<String> createCategory(@Valid @RequestBody CategoryEntity categoryEntity) {
 
         if (categoryService.categoryExist(categoryEntity.getName())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Category already exists");

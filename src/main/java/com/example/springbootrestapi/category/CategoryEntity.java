@@ -1,6 +1,9 @@
 package com.example.springbootrestapi.category;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "category", schema = "location")
@@ -8,15 +11,23 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
+    @NotNull
+    @JsonProperty("id")
     private int id;
     @Basic
     @Column(name = "name")
+    @NotBlank
+    @JsonProperty("name")
     private String name;
     @Basic
     @Column(name = "symbol")
+    @NotBlank
+    @JsonProperty("symbol")
     private String symbol;
     @Basic
     @Column(name = "description")
+    @NotBlank
+    @JsonProperty("description")
     private String description;
 
     public int getId() {

@@ -1,5 +1,6 @@
 package com.example.springbootrestapi.place;
 
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -63,5 +64,38 @@ public class PlaceService {
                                 p.getLongitude() >= minLong &&
                                 p.getLongitude() <= maxLong)
                 .toList();
+    }
+
+    public PlaceEntity updatePlace(Integer id, @Valid PlaceEntity updatedPlace) {
+        Optional<PlaceEntity> place = placeRepository.findById(id);
+        if (place.isPresent()) {
+            PlaceEntity existingPlace = place.get();
+            existingPlace.setName(updatedPlace.getName());
+            existingPlace.setCategoryId(updatedPlace.getCategoryId());
+            existingPlace.setLatitude(updatedPlace.getLatitude());
+            existingPlace.setLongitude(updatedPlace.getLongitude());
+            existingPlace.setDescription(updatedPlace.getDescription());
+
+            return placeRepository.save(existingPlace);
+        }
+        return null;
+    }
+
+    public boolean placeExists(String placeName) {
+        return placeRepository.findAll().stream()
+                .anyMatch(place -> place.getName().equalsIgnoreCase(placeName));
+    }
+
+    public List<PlaceEntity> createPlace(PlaceEntity newPlace) {
+        if (!placeExists(newPlace.getName())) {
+            placeRepository.save(newPlace);
+        }
+        return null;
+    }
+
+    public Optional<PlaceEntity> deletePlace(Integer id) {
+        Optional<PlaceEntity> place = placeRepository.findById(id);
+        place.ifPresent(placeRepository::delete);
+        return place;
     }
 }

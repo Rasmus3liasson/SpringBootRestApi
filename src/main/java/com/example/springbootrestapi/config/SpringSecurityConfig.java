@@ -40,17 +40,23 @@ public class SpringSecurityConfig {
 
     @Bean
     public AccessDeniedHandler handleAccessDenied() {
-        return createErrorHandler("Access Denied",HttpStatus.FORBIDDEN);
+        return createErrorHandler("Access Denied", HttpStatus.FORBIDDEN);
     }
 
     @Bean
     public AccessDeniedHandler noDefinedRoute() {
-        return createErrorHandler("This route don't exist",HttpStatus.NOT_FOUND);
+        return createErrorHandler("This route don't exist", HttpStatus.NOT_FOUND);
+    }
+
+    @Bean
+    public AccessDeniedHandler handleBadRequest() {
+        return createErrorHandler("Bad Request", HttpStatus.BAD_REQUEST);
     }
 
     public AccessDeniedHandler createErrorHandler(String errorString, HttpStatus statusCode) {
         return (req, res, exception) -> {
             res.setStatus(statusCode.value());
+            res.setContentType("application/json");
 
             ObjectMapper objectMapper = new ObjectMapper();
             Map<String, String> body = new HashMap<>();
@@ -78,13 +84,18 @@ public class SpringSecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/api/location/area").permitAll()
 
+                                .requestMatchers(HttpMethod.PUT, "/api/location/update/*").authenticated()
+                                .requestMatchers(HttpMethod.DELETE, "/api/location/delete/*").authenticated()
+                                .requestMatchers(HttpMethod.POST, "/api/location").authenticated()
+
 
                                 .anyRequest().denyAll()
                 )
                 .csrf().disable()
                 .exceptionHandling()
                 .defaultAccessDeniedHandlerFor(noDefinedRoute(), (RequestMatcher) null)
-                .accessDeniedHandler(handleAccessDenied());
+                .accessDeniedHandler(handleAccessDenied())
+                .accessDeniedHandler(handleBadRequest());
         return http.build();
     }
 }

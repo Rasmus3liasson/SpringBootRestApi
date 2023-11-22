@@ -1,6 +1,10 @@
 package com.example.springbootrestapi.place;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 
 import java.sql.Timestamp;
 
@@ -10,36 +14,50 @@ public class PlaceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "place_id")
+    @NotNull
+    @JsonProperty("placeId")
     private int placeId;
     @Basic
     @Column(name = "name")
+    @NotBlank
+    @JsonProperty("name")
     private String name;
     @Basic
     @Column(name = "category_id")
+    @NotNull
+    @JsonProperty("category_id")
     private int categoryId;
     @Basic
     @Column(name = "user_id")
+    @NotBlank
+    @JsonProperty("user_id")
     private String userId;
     @Basic
     @Column(name = "status")
     private Object status;
     @Basic
-    @Column(name = "last_modified")
+    @Column(name = "last_modified",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = true)
     private Timestamp lastModified;
     @Basic
     @Column(name = "description")
+    @NotBlank
+    @JsonProperty("description")
     private String description;
     @Basic
     @Column(name = "latitude")
+    @NotNull
+    @JsonProperty("latitude")
     private double latitude;
     @Basic
     @Column(name = "longitude")
+    @NotNull
+    @JsonProperty("longitude")
     private double longitude;
     @Basic
     @Column(name = "coordinates")
     private Object coordinates;
     @Basic
-    @Column(name = "created_at")
+    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private Timestamp createdAt;
 
     public int getPlaceId() {
@@ -62,8 +80,8 @@ public class PlaceEntity {
         return categoryId;
     }
 
-    public void setCategoryId(String categoryId) {
-        this.categoryId = Integer.parseInt(categoryId);
+    public void setCategoryId(int categoryId) {
+        this.categoryId = Integer.parseInt(String.valueOf(categoryId));
     }
 
     public String getUserId() {

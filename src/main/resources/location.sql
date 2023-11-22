@@ -24,11 +24,11 @@ CREATE TABLE IF NOT EXISTS place (
                                      category_id INT NOT NULL ,
                                      user_id VARCHAR(255) NOT NULL,
                                      status ENUM('private', 'public') DEFAULT 'public',
-                                     last_modified TIMESTAMP,
+                                     last_modified TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                                      description VARCHAR(255),
                                      latitude DOUBLE NOT NULL,
                                      longitude DOUBLE NOT NULL,
-                                     coordinates POINT,
+                                     coordinates VARCHAR(255),
                                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                      FOREIGN KEY (category_id) REFERENCES category(id)
 );
@@ -38,14 +38,18 @@ INSERT INTO category (name, symbol, description) VALUES
                                                      ('Sport', '⚽', 'Sport related'),
                                                      ('Attraction', '🕍', 'Defined as a attraction that a person might want to witness');
 
+CREATE TRIGGER before_insert
+    BEFORE INSERT ON place
+    FOR EACH ROW
+BEGIN
+    SET NEW.coordinates = ST_AsText(POINT(NEW.latitude, NEW.longitude));
+END;
+
 INSERT INTO place (name, category_id, user_id, description, latitude,longitude)
 VALUES
     ('Joans', 1, 'admin', 'Oriental resturant located in the city', 59.326650007053516, 14.523355400136957),
     ('Nobelstadion', 2, 'hej', 'Stadium for football', 59.3359257007357, 14.52599816033588),
     ('Nobel Museumet', 3, 'nils', 'Museum for Alfred Nobel', 59.34035786915067, 14.534666054112524),
     ('Ciaw Ciaw', 1, 'admin', 'Best pizzeria in town', 59.329544957467895, 14.56236226945378);
-
-
-CREATE VIEW place_view AS SELECT place_id,name,category_id,user_id,status,last_modified,description, ST_AsText(POINT(latitude,longitude))  AS coordinates,created_at FROM place;
 
 SELECT * FROM place

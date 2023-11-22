@@ -1,24 +1,26 @@
 package com.example.springbootrestapi.place;
 
+import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
 @RestController
+@Validated
 @RequestMapping(value = "/api/location", produces = "application/json")
 public class PlaceController {
 
-    private PlaceService placeService;
+    private final PlaceService placeService;
 
     @Autowired
-    public void PlaceController(PlaceService placeService) {
+    public PlaceController(PlaceService placeService) {
         this.placeService = placeService;
     }
 
@@ -44,12 +46,13 @@ public class PlaceController {
 
     @GetMapping("/category/{categoryId}")
     public List<PlaceEntity> getPlacesRelatedToCategory(@PathVariable Integer categoryId) {
-       if (placeService.getPlacesByCategory(categoryId).isEmpty()) {
+        if (placeService.getPlacesByCategory(categoryId).isEmpty()) {
             throw new IllegalArgumentException("Couldn't find place with category id of " + categoryId);
         }
         return placeService.getPlacesByCategory(categoryId);
 
     }
+
     @GetMapping("/userId")
     @PreAuthorize("isAuthenticated()")
     public List<PlaceEntity> getPlacesRelatedToUser() {
@@ -64,6 +67,40 @@ public class PlaceController {
         return placeService.getPlacesInArea(latitude, longitude, radius);
 
     }
+
+    @PutMapping("/update/{id}")
+    public ResponseEntity<String> updatePlace(@PathVariable Integer id, @Valid @RequestBody PlaceEntity updatedPlace) {
+        try {
+            placeService.updatePlace(id, updatedPlace);
+            return ResponseEntity.status(HttpStatus.OK).body("Updated place with id " + id);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @PostMapping
+    public ResponseEntity<String> createPlace(@Valid @RequestBody PlaceEntity newPlace) {
+        try {
+            placeService.createPlace(newPlace);
+            return ResponseEntity.status(HttpStatus.OK).body("Created place with id " + newPlace.getPlaceId() + " successfully");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deletePlace(@PathVariable Integer id) {
+        Optional<PlaceEntity> deletedPlace = placeService.deletePlace(id);
+
+        if (deletedPlace.isPresent()) {
+            return ResponseEntity.ok("Deleted place with id " + id);
+        } else {
+            throw new IllegalArgumentException("Place with id " + id + " does not exist");
+        }
+    }
+
+
+
 }
 
 
