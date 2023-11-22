@@ -1,5 +1,6 @@
 package com.example.springbootrestapi.place;
 
+import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,9 @@ public class PlaceController {
 
     @GetMapping
     public List<PlaceEntity> getAllPlaces() {
+        if (placeService.getAllPlaces().isEmpty()) {
+            throw new IllegalStateException("No places available");
+        }
         return placeService.getAllPlaces();
     }
 
@@ -40,6 +44,9 @@ public class PlaceController {
 
     @GetMapping("/category/{categoryId}")
     public List<PlaceEntity> getPlacesRelatedToCategory(@PathVariable Integer categoryId) {
+       if (placeService.getPlacesByCategory(categoryId).isEmpty()) {
+            throw new IllegalArgumentException("Couldn't find place with category id of " + categoryId);
+        }
         return placeService.getPlacesByCategory(categoryId);
 
     }
@@ -47,6 +54,14 @@ public class PlaceController {
     @PreAuthorize("isAuthenticated()")
     public List<PlaceEntity> getPlacesRelatedToUser() {
         return placeService.getPlacesRelatedToUser();
+
+    }
+
+    @GetMapping("/area")
+    public List<PlaceEntity> getPlacesInArea(@PathParam("latitude") double latitude,
+                                             @PathParam("longitude") double longitude,
+                                             @PathParam("radius") double radius) {
+        return placeService.getPlacesInArea(latitude, longitude, radius);
 
     }
 }

@@ -49,4 +49,19 @@ public class PlaceService {
         }
         throw new RuntimeException("User isn't signed in");
     }
+
+    public List<PlaceEntity> getPlacesInArea(double latitude, double longitude, double radius) {
+        double minLat = latitude - radius;
+        double maxLat = latitude + radius;
+        double minLong = longitude - radius;
+        double maxLong = longitude + radius;
+
+        return placeRepository.findAll().stream()
+                .filter(p ->
+                        p.getLatitude() >= minLat &&
+                                p.getLatitude() <= maxLat &&
+                                p.getLongitude() >= minLong &&
+                                p.getLongitude() <= maxLong)
+                .toList();
+    }
 }
