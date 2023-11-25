@@ -26,9 +26,9 @@ public class SpringSecurityConfig {
 
     @Bean
     public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails admin = User.withUsername("admin")
-                .password(passwordEncoder().encode("AdminPassword123"))
-                .roles("ADMIN")
+        UserDetails admin = User.withUsername("rasmus")
+                .password(passwordEncoder().encode("rasmus"))
+                .roles("admin")
                 .build();
         return new InMemoryUserDetailsManager(admin);
     }
@@ -71,14 +71,14 @@ public class SpringSecurityConfig {
     /*Might remove csrf disable later on*/
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .httpBasic(Customizer.withDefaults())
+
+        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/*").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
 
-                                .requestMatchers(HttpMethod.GET, "/api/location","/api/location/*", "/api/location/category/*").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/location", "/api/location/*", "/api/location/category/*").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/location/userId").authenticated()
 
@@ -91,11 +91,11 @@ public class SpringSecurityConfig {
 
                                 .anyRequest().denyAll()
                 )
-                .csrf().disable()
-                .exceptionHandling()
+                .csrf().disable();
+            /*    .exceptionHandling()
                 .defaultAccessDeniedHandlerFor(noDefinedRoute(), (RequestMatcher) null)
                 .accessDeniedHandler(handleAccessDenied())
-                .accessDeniedHandler(handleBadRequest());
+                .accessDeniedHandler(handleBadRequest());*/
         return http.build();
     }
 }

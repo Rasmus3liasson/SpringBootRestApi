@@ -18,7 +18,7 @@ public class ExceptionHandlerController {
     }
     @ExceptionHandler(IllegalStateException.class)
     public ProblemDetail handleNotFound (IllegalStateException ex) {
-        return buildProblemDetail(HttpStatus.NOT_FOUND, "Given id don't exist", ex.getLocalizedMessage(), ex.getMessage(),"https://example.com/documentation/errors/not-found");
+        return buildProblemDetail(HttpStatus.NOT_FOUND, "Couldn't-' find object", ex.getLocalizedMessage(), ex.getMessage(),"https://example.com/documentation/errors/not-found");
     }
     @ExceptionHandler(RequestValidationException.class)
     public ProblemDetail handleRequestValidationException(RequestValidationException ex) {
