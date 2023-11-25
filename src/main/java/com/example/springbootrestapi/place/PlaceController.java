@@ -1,5 +1,6 @@
 package com.example.springbootrestapi.place;
 
+import com.example.springbootrestapi.exception.RequestValidationException;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,8 +84,8 @@ public class PlaceController {
         try {
             placeService.createPlace(newPlace);
             return ResponseEntity.status(HttpStatus.OK).body("Created place with id " + newPlace.getPlaceId() + " successfully");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+        } catch (RequestValidationException e) {
+            throw new RequestValidationException("Validation failed for the request body", e);
         }
     }
 
@@ -95,7 +96,7 @@ public class PlaceController {
         if (deletedPlace.isPresent()) {
             return ResponseEntity.ok("Deleted place with id " + id);
         } else {
-            throw new IllegalArgumentException("Place with id " + id + " does not exist");
+            throw new IllegalStateException("Place with id " + id + " does not exist");
         }
     }
 
