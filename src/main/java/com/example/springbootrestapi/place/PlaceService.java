@@ -12,6 +12,8 @@ import java.util.Optional;
 
 @Service
 public class PlaceService {
+
+
     private final PlaceRepository placeRepository;
 
 
@@ -20,12 +22,30 @@ public class PlaceService {
         this.placeRepository = placeRepository;
     }
 
+    private boolean isAuthenticated() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getAuthorities().stream()
+                .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+    }
+
+
     public List<PlaceEntity> getAllPlaces() {
-        return placeRepository.findAll();
+        if (isAuthenticated()) {
+            return placeRepository.findAll();
+        } else {
+            return placeRepository.findByStatus("public");
+        }
     }
 
     public Optional<PlaceEntity> getPlaceById(Integer id) {
-        return placeRepository.findById(id);
+        if (isAuthenticated()) {
+            return placeRepository.findById(id);
+        } else {
+            List<PlaceEntity> publicPlaces = placeRepository.findByStatus("public");
+            return publicPlaces.stream()
+                    .filter(place -> place.getPlaceId() == id)
+                    .findFirst();
+        }
     }
 
     public List<PlaceEntity> getPlacesByCategory(Integer category) {
@@ -39,6 +59,7 @@ public class PlaceService {
 
     public String getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
 
         if (auth != null && auth.isAuthenticated()) {
             Object principal = auth.getPrincipal();
