@@ -1,6 +1,8 @@
 package com.example.springbootrestapi.place;
 
 import com.example.springbootrestapi.exception.RequestValidationException;
+import com.example.springbootrestapi.geomaps.AddressInfo;
+import com.example.springbootrestapi.geomaps.GeoMaps;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +21,12 @@ import java.util.Optional;
 public class PlaceController {
 
     private final PlaceService placeService;
+    private final GeoMaps geoMaps;
 
     @Autowired
-    public PlaceController(PlaceService placeService) {
+    public PlaceController(PlaceService placeService, GeoMaps geoMaps) {
         this.placeService = placeService;
+        this.geoMaps = geoMaps;
     }
 
     @GetMapping
@@ -100,6 +104,17 @@ public class PlaceController {
         }
     }
 
+    @GetMapping("/area/geoLocation")
+    public ResponseEntity<AddressInfo> getAddressInfo(@PathParam("latitude") double latitude,
+                                                      @PathParam("longitude") double longitude) {
+        AddressInfo adressInfo = geoMaps.getLocation(latitude, longitude);
+
+        if (adressInfo != null) {
+            return ResponseEntity.status(HttpStatus.OK).body(adressInfo);
+        } else {
+            throw new IllegalStateException("We couldn't find any address on with the coordinates");
+        }
+    }
 
 
 }

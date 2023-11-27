@@ -82,7 +82,7 @@ public class SpringSecurityConfig {
 
                                 .requestMatchers(HttpMethod.GET, "/api/location/userId").authenticated()
 
-                                .requestMatchers(HttpMethod.GET, "/api/location/area").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/location/area","/api/location/area/**").permitAll()
 
                                 .requestMatchers(HttpMethod.PUT, "/api/location/update/*").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/api/location/delete/*").authenticated()
