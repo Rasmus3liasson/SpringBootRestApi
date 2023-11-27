@@ -38,18 +38,18 @@ INSERT INTO category (name, symbol, description) VALUES
                                                      ('Sport', '⚽', 'Sport related'),
                                                      ('Attraction', '🕍', 'Defined as a attraction that a person might want to witness');
 
-CREATE TRIGGER before_insert
+CREATE TRIGGER before_place_insert
     BEFORE INSERT ON place
     FOR EACH ROW
 BEGIN
     SET NEW.coordinates = ST_AsText(POINT(NEW.latitude, NEW.longitude));
 END;
 
-INSERT INTO place (name, category_id, user_id, description, latitude,longitude)
+INSERT INTO place (name, category_id, user_id, status, description, latitude,longitude)
 VALUES
-    ('Joans', 1, 'admin', 'Oriental resturant located in the city', 59.326650007053516, 14.523355400136957),
-    ('Nobelstadion', 2, 'hej', 'Stadium for football', 59.3359257007357, 14.52599816033588),
-    ('Nobel Museumet', 3, 'nils', 'Museum for Alfred Nobel', 59.34035786915067, 14.534666054112524),
-    ('Ciaw Ciaw', 1, 'admin', 'Best pizzeria in town', 59.329544957467895, 14.56236226945378);
+    ('Joans', 1, 'admin',status, 'Oriental resturant located in the city', 59.326650007053516, 14.523355400136957),
+    ('Nobelstadion', 2, 'hej',status, 'Stadium for football', 59.3359257007357, 14.52599816033588),
+    ('Nobel Museumet', 3, 'nils','private', 'Museum for Alfred Nobel', 59.34035786915067, 14.534666054112524),
+    ('Ciaw Ciaw', 1, 'admin',status, 'Best pizzeria in town', 59.329544957467895, 14.56236226945378);
 
 SELECT * FROM place

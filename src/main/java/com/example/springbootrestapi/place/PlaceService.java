@@ -5,10 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class PlaceService {
@@ -22,11 +26,29 @@ public class PlaceService {
         this.placeRepository = placeRepository;
     }
 
+
     private boolean isAuthenticated() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        return auth.getAuthorities().stream()
-                .anyMatch(role -> role.getAuthority().equals("ROLE_ADMIN"));
+
+        return auth instanceof JwtAuthenticationToken && auth.isAuthenticated();
     }
+
+    private boolean isAuthenticatedWithAdminRole() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
+            Jwt jwt = jwtAuth.getToken();
+
+            Set<String> scopes = new HashSet<>(jwt.getClaimAsStringList("scope"));
+            return scopes.contains("admin");
+        } else {
+            return false;
+        }
+    }
+
+
+
 
 
     public List<PlaceEntity> getAllPlaces() {
@@ -52,12 +74,15 @@ public class PlaceService {
         return placeRepository.findAll().stream().filter(p -> p.getCategoryId() == category).toList();
     }
 
-    public List<PlaceEntity> getPlacesRelatedToUser() {
-        String userId = getCurrentUser();
-        return placeRepository.findAll().stream().filter(p -> p.getUserId().equals(userId)).toList();
+    public List<PlaceEntity> getPlacesRelatedToUser()  {
+        if (isAuthenticatedWithAdminRole()){
+        return placeRepository.findAll().stream().filter(p -> p.getUserId().equals("admin")).toList();
+        }
+        throw new IllegalStateException("No related places");
+
     }
 
-    public String getCurrentUser() {
+ /*   public String getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 
@@ -70,7 +95,7 @@ public class PlaceService {
             }
         }
         throw new RuntimeException("User isn't signed in");
-    }
+    }*/
 
     public List<PlaceEntity> getPlacesInArea(double latitude, double longitude, double radius) {
         double minLat = latitude - radius;
