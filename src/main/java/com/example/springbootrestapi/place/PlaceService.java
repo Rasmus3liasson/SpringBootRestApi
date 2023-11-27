@@ -116,6 +116,11 @@ public class PlaceService {
         Optional<PlaceEntity> place = placeRepository.findById(id);
         if (place.isPresent()) {
             PlaceEntity existingPlace = place.get();
+
+            // Check if field should be updated
+            if (updatedPlace.getStatus() != null) {
+                existingPlace.setStatus(updatedPlace.getStatus());
+            }
             existingPlace.setName(updatedPlace.getName());
             existingPlace.setCategoryId(updatedPlace.getCategoryId());
             existingPlace.setLatitude(updatedPlace.getLatitude());

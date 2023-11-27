@@ -78,13 +78,13 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize
                                 .requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/*").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/categories").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/api/categories").hasAuthority("SCOPE_admin")
 
                                 .requestMatchers(HttpMethod.GET, "/api/location", "/api/location/*", "/api/location/category/*").permitAll()
 
                                 .requestMatchers(HttpMethod.GET, "/api/location/userId").authenticated()
 
-                                .requestMatchers(HttpMethod.GET, "/api/location/area","/api/location/area/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/location/area", "/api/location/area/**").permitAll()
 
                                 .requestMatchers(HttpMethod.PUT, "/api/location/update/*").authenticated()
                                 .requestMatchers(HttpMethod.DELETE, "/api/location/delete/*").authenticated()
@@ -93,11 +93,11 @@ public class SpringSecurityConfig {
 
                                 .anyRequest().denyAll()
                 )
-                .csrf().disable();
-            /*    .exceptionHandling()
+                .csrf().disable()
+                .exceptionHandling()
                 .defaultAccessDeniedHandlerFor(noDefinedRoute(), (RequestMatcher) null)
                 .accessDeniedHandler(handleAccessDenied())
-                .accessDeniedHandler(handleBadRequest());*/
+                .accessDeniedHandler(handleBadRequest());
         return http.build();
     }
 }

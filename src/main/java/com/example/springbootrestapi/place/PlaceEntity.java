@@ -36,7 +36,7 @@ public class PlaceEntity {
     @Column(name = "status")
     private Object status;
     @Basic
-    @Column(name = "last_modified",columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = true)
+    @Column(name = "last_modified"/*, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"*/)
     private Timestamp lastModified;
     @Basic
     @Column(name = "description")
@@ -57,7 +57,7 @@ public class PlaceEntity {
     @Column(name = "coordinates")
     private Object coordinates;
     @Basic
-    @Column(name = "created_at", columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
+    @Column(name = "created_at"/*, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false*/)
     private Timestamp createdAt;
 
     public int getPlaceId() {

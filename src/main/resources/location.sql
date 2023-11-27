@@ -42,7 +42,13 @@ CREATE TRIGGER before_place_insert
     BEFORE INSERT ON place
     FOR EACH ROW
 BEGIN
+    IF NEW.status IS NULL THEN
+        SET NEW.status = 'public';
+    END IF;
+
     SET NEW.coordinates = ST_AsText(POINT(NEW.latitude, NEW.longitude));
+
+    SET NEW.last_modified = CURRENT_TIMESTAMP;
 END;
 
 INSERT INTO place (name, category_id, user_id, status, description, latitude,longitude)
