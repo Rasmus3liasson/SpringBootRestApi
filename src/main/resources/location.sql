@@ -38,8 +38,8 @@ INSERT INTO category (name, symbol, description) VALUES
                                                      ('Sport', '⚽', 'Sport related'),
                                                      ('Attraction', '🕍', 'Defined as a attraction that a person might want to witness');
 
-CREATE TRIGGER before_place_insert
-    BEFORE INSERT ON place
+CREATE TRIGGER before_place_update
+    BEFORE UPDATE ON place
     FOR EACH ROW
 BEGIN
     IF NEW.status IS NULL THEN
