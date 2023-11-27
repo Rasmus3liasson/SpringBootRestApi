@@ -74,13 +74,33 @@ public class PlaceService {
         return placeRepository.findAll().stream().filter(p -> p.getCategoryId() == category).toList();
     }
 
-    public List<PlaceEntity> getPlacesRelatedToUser()  {
+    public List<PlaceEntity> getPlacesRelatedToUser() {
+            String userId = getCurrentUserId();
+        if (isAuthenticated()) {
+            return placeRepository.findAll().stream().filter(p -> p.getUserId().toLowerCase().equals(userId)).toList();
+        }
+        throw new IllegalStateException("No related places");
+    }
+
+    private String getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth instanceof JwtAuthenticationToken) {
+            JwtAuthenticationToken jwtAuth = (JwtAuthenticationToken) auth;
+            Jwt jwt = jwtAuth.getToken();
+            return jwt.getClaimAsString("preferred_username").toLowerCase();
+        } else {
+            throw new IllegalStateException("Not authenticated");
+        }
+    }
+
+/*    public List<PlaceEntity> getPlacesRelatedToUser()  {
         if (isAuthenticatedWithAdminRole()){
         return placeRepository.findAll().stream().filter(p -> p.getUserId().equals("admin")).toList();
         }
         throw new IllegalStateException("No related places");
 
-    }
+    }*/
 
  /*   public String getCurrentUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

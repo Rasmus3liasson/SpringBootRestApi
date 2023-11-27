@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface PlaceRepository extends JpaRepository<PlaceEntity,Integer>{
     List<PlaceEntity> findByStatus(String status);
+    List<PlaceEntity> findByUserId(String status);
 
 }

@@ -61,6 +61,7 @@ public class PlaceController {
     @GetMapping("/userId")
     @PreAuthorize("isAuthenticated()")
     public List<PlaceEntity> getPlacesRelatedToUser() {
+        System.out.println(placeService.getPlacesRelatedToUser());
         return placeService.getPlacesRelatedToUser();
 
     }
