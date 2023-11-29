@@ -2,50 +2,54 @@ package com.example.springbootrestapi;
 
 import com.example.springbootrestapi.config.SpringSecurityConfig;
 import com.example.springbootrestapi.geomaps.GeoMaps;
+import com.example.springbootrestapi.mapper.ResponseMapper;
 import com.example.springbootrestapi.place.PlaceController;
 import com.example.springbootrestapi.place.PlaceEntity;
 import com.example.springbootrestapi.place.PlaceService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
+
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.ResultMatcher;
 
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.jsonPath;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 
 @WebMvcTest(controllers = PlaceController.class)
 @Import(SpringSecurityConfig.class)
+@ComponentScan(basePackages = "com.example.springbootrestapi.mapper")
 public class PlaceControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private ResponseMapper responseMapper;
 
     @MockBean
     private PlaceService placeService;
 
     @MockBean
     private GeoMaps geoMaps;
+
 
     @Test
     void shouldReturnPlaceWithId() throws Exception {
@@ -57,20 +61,34 @@ public class PlaceControllerTest {
         placeEntity.setCategoryId(1);
         placeEntity.setUserId("rasmus");
         placeEntity.setStatus("public");
-        placeEntity.setDescription("Test place");
+        placeEntity.setLastModified(Timestamp.valueOf(LocalDateTime.now()));
+        placeEntity.setDescription("This is a test place");
         placeEntity.setLatitude(123.456);
         placeEntity.setLongitude(789.012);
+        placeEntity.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
         when(placeService.getPlaceById(placeId)).thenReturn(Optional.of(placeEntity));
 
-        MvcResult result = mockMvc.perform(get("/api/location/{id}", placeId))
+        mockMvc.perform(get("/api/location/{placeId}", placeId))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
+                .andExpect(responseMapper.convertJsonToObject(placeEntity, PlaceEntity.class));
 
-        String resBody = result.getResponse().getContentAsString();
-        System.out.println("Body: " + resBody);
+    }
+
+    @Test
+    void shouldReturnNotFound() throws Exception {
+        int placeId = 2;
+        when(placeService.getPlaceById(placeId)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/location/{placeId}", placeId))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON)).andExpect(responseMapper.containsError(
+                        "Not a valid request", String.format("Place with id %d does not exist", placeId)));
 
 
     }
+
+
+
 }
