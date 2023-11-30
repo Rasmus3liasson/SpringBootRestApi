@@ -46,7 +46,7 @@ public class CategoryController {
             if (categoryService.categoryExist(categoryEntity.getName())) {
                 return ResponseEntity.status(HttpStatus.CONFLICT).body("Category already exists");
             } else if (!categoryEntity.getSymbol().matches("^[\\x{1F300}-\\x{1F6FF}\\x{1F700}-\\x{1F77F}\\x{1F780}-\\x{1F7FF}\\x{1F800}-\\x{1F8FF}\\x{1F900}-\\x{1F9FF}\\x{2600}-\\x{26FF}]$")) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Not a valid symbol");
+                throw new IllegalArgumentException("Not a valid symbol");
             }
 
             categoryService.createCategory(categoryEntity);

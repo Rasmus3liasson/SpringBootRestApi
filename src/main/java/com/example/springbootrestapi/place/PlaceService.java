@@ -71,7 +71,15 @@ public class PlaceService {
     }
 
     public List<PlaceEntity> getPlacesByCategory(Integer category) {
+        if (isAuthenticated()) {
         return placeRepository.findAll().stream().filter(p -> p.getCategoryId() == category).toList();
+
+        }
+        else {
+            return placeRepository.findAll().stream()
+                    .filter(p -> p.getCategoryId() == category && "public".equals(p.getStatus()))
+                    .toList();
+        }
     }
 
     public List<PlaceEntity> getPlacesRelatedToUser() {

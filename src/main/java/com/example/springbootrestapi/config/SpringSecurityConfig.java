@@ -1,6 +1,7 @@
 package com.example.springbootrestapi.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,44 +27,18 @@ import java.util.Map;
 @EnableRetry
 public class SpringSecurityConfig {
 
+
+    private final CustomDeniedHandler customDeniedHandler;
+
+    public SpringSecurityConfig(CustomDeniedHandler customDeniedHandler) {
+        this.customDeniedHandler = customDeniedHandler;
+    }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AccessDeniedHandler handleAccessDenied() {
-        return createErrorHandler("Access Denied", HttpStatus.FORBIDDEN);
-    }
-
-    @Bean
-    public AccessDeniedHandler noDefinedRoute() {
-        return createErrorHandler("This route don't exist", HttpStatus.NOT_FOUND);
-    }
-
-    @Bean
-    public AccessDeniedHandler handleBadRequest() {
-        return createErrorHandler("Bad Request", HttpStatus.BAD_REQUEST);
-    }
-
-    @Bean
-    public AccessDeniedHandler handleUnauthorized() {
-        return createErrorHandler("Unauthorized", HttpStatus.UNAUTHORIZED);
-    }
-
-    public AccessDeniedHandler createErrorHandler(String errorString, HttpStatus statusCode) {
-        return (req, res, exception) -> {
-            res.setStatus(statusCode.value());
-            res.setContentType("application/json");
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            Map<String, String> body = new HashMap<>();
-            body.put("error", errorString);
-
-            res.getWriter().write(objectMapper.writeValueAsString(body));
-
-        };
-    }
 
 
     /*Might remove csrf disable later on*/
@@ -91,10 +66,11 @@ public class SpringSecurityConfig {
                 )
                 .csrf().disable()
                 .exceptionHandling()
-                .defaultAccessDeniedHandlerFor(noDefinedRoute(), (RequestMatcher) null)
-                .accessDeniedHandler(handleAccessDenied())
-                .accessDeniedHandler(handleBadRequest())
-                .accessDeniedHandler(handleUnauthorized());
+                .defaultAccessDeniedHandlerFor(customDeniedHandler.noDefinedRoute(), (RequestMatcher) null)
+                .accessDeniedHandler(customDeniedHandler.handleBadRequest())
+                .accessDeniedHandler(customDeniedHandler.handleAccessDenied())
+                .accessDeniedHandler(customDeniedHandler.handleUnauthorized());
+
         return http.build();
     }
 }
