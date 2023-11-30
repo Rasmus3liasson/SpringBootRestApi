@@ -27,15 +27,6 @@ import java.util.Map;
 public class SpringSecurityConfig {
 
     @Bean
-    public InMemoryUserDetailsManager userDetailsService() {
-        UserDetails admin = User.withUsername("rasmus")
-                .password(passwordEncoder().encode("rasmus"))
-                .roles("admin")
-                .build();
-        return new InMemoryUserDetailsManager(admin);
-    }
-
-    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -53,6 +44,11 @@ public class SpringSecurityConfig {
     @Bean
     public AccessDeniedHandler handleBadRequest() {
         return createErrorHandler("Bad Request", HttpStatus.BAD_REQUEST);
+    }
+
+    @Bean
+    public AccessDeniedHandler handleUnauthorized() {
+        return createErrorHandler("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
     public AccessDeniedHandler createErrorHandler(String errorString, HttpStatus statusCode) {
@@ -97,7 +93,8 @@ public class SpringSecurityConfig {
                 .exceptionHandling()
                 .defaultAccessDeniedHandlerFor(noDefinedRoute(), (RequestMatcher) null)
                 .accessDeniedHandler(handleAccessDenied())
-                .accessDeniedHandler(handleBadRequest());
+                .accessDeniedHandler(handleBadRequest())
+                .accessDeniedHandler(handleUnauthorized());
         return http.build();
     }
 }

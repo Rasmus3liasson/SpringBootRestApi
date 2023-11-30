@@ -2,6 +2,7 @@ package com.example.springbootrestapi.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +24,10 @@ public class ExceptionHandlerController {
     @ExceptionHandler(RequestValidationException.class)
     public ProblemDetail handleRequestValidationException(RequestValidationException ex) {
         return buildProblemDetail(HttpStatus.BAD_REQUEST, "Request validation failed", ex.getLocalizedMessage(), ex.getMessage(), "https://example.com/documentation/errors/request-validation-failed");
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleRequestValidationException(AccessDeniedException ex) {
+        return buildProblemDetail(HttpStatus.UNAUTHORIZED, "Not Authorized", ex.getLocalizedMessage(), ex.getMessage(), "https://example.com/documentation/errors/unauthorized");
     }
 
     private ProblemDetail buildProblemDetail(HttpStatus status, String title, String detail, String exMessage,String errorUrl) {

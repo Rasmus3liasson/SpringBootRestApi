@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,9 +64,11 @@ public class PlaceController {
     @GetMapping("/userId")
     @PreAuthorize("isAuthenticated()")
     public List<PlaceEntity> getPlacesRelatedToUser() {
-        System.out.println(placeService.getPlacesRelatedToUser());
-        return placeService.getPlacesRelatedToUser();
-
+        try {
+            return placeService.getPlacesRelatedToUser();
+        } catch (AccessDeniedException e) {
+            throw new AccessDeniedException("Access denied");
+        }
     }
 
     @GetMapping("/area")
