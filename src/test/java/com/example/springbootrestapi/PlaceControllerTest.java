@@ -14,8 +14,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -25,12 +27,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 @WebMvcTest(controllers = PlaceController.class)
@@ -61,11 +65,12 @@ public class PlaceControllerTest {
         placeEntity.setCategoryId(1);
         placeEntity.setUserId("rasmus");
         placeEntity.setStatus("public");
-        placeEntity.setLastModified(Timestamp.valueOf(LocalDateTime.now()));
+        Timestamp timestamp = Timestamp.valueOf("2023-11-30 10:51:01.457");
+        placeEntity.setLastModified(timestamp);
+        placeEntity.setCreatedAt(timestamp);
         placeEntity.setDescription("This is a test place");
         placeEntity.setLatitude(123.456);
         placeEntity.setLongitude(789.012);
-        placeEntity.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
 
         when(placeService.getPlaceById(placeId)).thenReturn(Optional.of(placeEntity));
 
@@ -88,7 +93,4 @@ public class PlaceControllerTest {
 
 
     }
-
-
-
 }
