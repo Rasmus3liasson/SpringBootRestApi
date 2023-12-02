@@ -1,12 +1,11 @@
 package com.example.springbootrestapi.exception;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.net.URI;
 
@@ -17,8 +16,8 @@ public class ExceptionHandlerController {
     public ProblemDetail handleBadRequest(IllegalArgumentException ex) {
         return buildProblemDetail(HttpStatus.BAD_REQUEST, "Not a valid request", ex.getLocalizedMessage() , ex.getMessage(),"https://example.com/documentation/errors/bad-request");
     }
-    @ExceptionHandler(IllegalStateException.class)
-    public ProblemDetail handleNotFound (IllegalStateException ex) {
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ProblemDetail handleNotFound (EntityNotFoundException ex) {
         return buildProblemDetail(HttpStatus.NOT_FOUND, "Couldn't' find object", ex.getLocalizedMessage(), ex.getMessage(),"https://example.com/documentation/errors/not-found");
     }
     @ExceptionHandler(RequestValidationException.class)
@@ -28,6 +27,10 @@ public class ExceptionHandlerController {
     @ExceptionHandler(AccessDeniedException.class)
     public ProblemDetail handleRequestValidationException(AccessDeniedException ex) {
         return buildProblemDetail(HttpStatus.UNAUTHORIZED, "Not Authorized", ex.getLocalizedMessage(), ex.getMessage(), "https://example.com/documentation/errors/unauthorized");
+    }
+    @ExceptionHandler(ConflictException.class)
+    public ProblemDetail handleConflictException(ConflictException ex) {
+        return buildProblemDetail(HttpStatus.CONFLICT, "Conflict", ex.getLocalizedMessage(), ex.getMessage(), "https://example.com/documentation/errors/conflict");
     }
 
     private ProblemDetail buildProblemDetail(HttpStatus status, String title, String detail, String exMessage,String errorUrl) {

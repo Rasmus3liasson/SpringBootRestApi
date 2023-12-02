@@ -1,5 +1,7 @@
 package com.example.springbootrestapi.place;
 
+import com.example.springbootrestapi.exception.ConflictException;
+import com.example.springbootrestapi.exception.RequestValidationException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -169,7 +171,10 @@ public class PlaceService {
         if (!placeExists(newPlace.getName())) {
             placeRepository.save(newPlace);
         }
-        return null;
+        else {
+            throw new ConflictException("Place already exists");
+        }
+        throw new RequestValidationException("This is not a valid request");
     }
 
     public Optional<PlaceEntity> deletePlace(Integer id) {

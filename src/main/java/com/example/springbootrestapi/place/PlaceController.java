@@ -3,6 +3,7 @@ package com.example.springbootrestapi.place;
 import com.example.springbootrestapi.exception.RequestValidationException;
 import com.example.springbootrestapi.geomaps.AddressInfo;
 import com.example.springbootrestapi.geomaps.GeoMaps;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class PlaceController {
     @GetMapping
     public List<PlaceEntity> getAllPlaces() {
         if (placeService.getAllPlaces().isEmpty()) {
-            throw new IllegalStateException("No places available");
+            throw new EntityNotFoundException("No places available");
         }
         return placeService.getAllPlaces();
     }
@@ -48,7 +49,7 @@ public class PlaceController {
         if (place.isPresent()) {
             return place;
         } else {
-            throw new IllegalArgumentException("Place with id " + id + " does not exist");
+            throw new EntityNotFoundException("Place with id " + id + " does not exist");
         }
     }
 
@@ -95,7 +96,7 @@ public class PlaceController {
             placeService.createPlace(newPlace);
             return ResponseEntity.status(HttpStatus.OK).body("Created place with id " + newPlace.getPlaceId() + " successfully");
         } catch (RequestValidationException e) {
-            throw new RequestValidationException("Validation failed for the request body", e);
+            throw new RequestValidationException("Validation failed for the request body");
         }
     }
 
@@ -106,7 +107,7 @@ public class PlaceController {
         if (deletedPlace.isPresent()) {
             return ResponseEntity.ok("Deleted place with id " + id);
         } else {
-            throw new IllegalStateException("Place with id " + id + " does not exist");
+            throw new EntityNotFoundException("Place with id " + id + " does not exist");
         }
     }
 
@@ -118,7 +119,7 @@ public class PlaceController {
         if (adressInfo != null) {
             return ResponseEntity.status(HttpStatus.OK).body(adressInfo);
         } else {
-            throw new IllegalStateException("We couldn't find any address on with the coordinates");
+            throw new EntityNotFoundException("We couldn't find any address on with the coordinates");
         }
     }
 

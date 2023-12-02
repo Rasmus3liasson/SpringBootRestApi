@@ -1,5 +1,6 @@
 package com.example.springbootrestapi.category;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
@@ -34,7 +35,7 @@ public class CategoryController {
         if (category.isPresent()) {
             return category;
         } else {
-            throw new IllegalArgumentException("Category with id " + id + " does not exist");
+            throw new EntityNotFoundException("Category with id " + id + " does not exist");
         }
     }
 

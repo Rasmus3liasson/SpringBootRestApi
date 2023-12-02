@@ -2,10 +2,7 @@ package com.example.springbootrestapi.exception;
 
 
 public class RequestValidationException extends RuntimeException {
-    public RequestValidationException(String message, RequestValidationException e) {
+    public RequestValidationException(String message) {
         super(message);
-    }
-
-    public RequestValidationException(String message, IllegalArgumentException e) {
     }
 }
