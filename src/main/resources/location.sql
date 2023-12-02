@@ -3,6 +3,8 @@
 DROP DATABASE IF EXISTS location;
 CREATE DATABASE location CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;;
 
+
+
 USE location;
 
 CREATE TABLE IF NOT EXISTS category(
@@ -36,10 +38,13 @@ CREATE TABLE IF NOT EXISTS place (
 INSERT INTO category (name, symbol, description) VALUES
                                                      ('Resturant', '😀', 'Where you can order food'),
                                                      ('Sport', '⚽', 'Sport related'),
+
+
                                                      ('Attraction', '🕍', 'Defined as a attraction that a person might want to witness');
 
-CREATE TRIGGER before_place_update
-    BEFORE UPDATE ON place
+
+CREATE TRIGGER before_place_insert
+    BEFORE INSERT ON place
     FOR EACH ROW
 BEGIN
     IF NEW.status IS NULL THEN
@@ -47,7 +52,13 @@ BEGIN
     END IF;
 
     SET NEW.coordinates = ST_AsText(POINT(NEW.latitude, NEW.longitude));
+END;
 
+
+CREATE TRIGGER before_place_update
+    BEFORE UPDATE ON place
+    FOR EACH ROW
+BEGIN
     SET NEW.last_modified = CURRENT_TIMESTAMP;
 END;
 
@@ -56,6 +67,7 @@ VALUES
     ('Joans', 1, 'admin',status, 'Oriental resturant located in the city', 59.326650007053516, 14.523355400136957),
     ('Nobelstadion', 2, 'hej',status, 'Stadium for football', 59.3359257007357, 14.52599816033588),
     ('Nobel Museumet', 3, 'nils','private', 'Museum for Alfred Nobel', 59.34035786915067, 14.534666054112524),
-    ('Ciaw Ciaw', 1, 'admin',status, 'Best pizzeria in town', 59.329544957467895, 14.56236226945378);
+    ('Ciaw Ciaw', 1, 'admin',status, 'Best pizzeria in town', 59.329544957467895, 14.56236226945378),
+    ('Big Ben', 3, 'admin', 'public', 'Iconic clock tower in London', 51.5007292, -0.1246254);
 
 SELECT * FROM place

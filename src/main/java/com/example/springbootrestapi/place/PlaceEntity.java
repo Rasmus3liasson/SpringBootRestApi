@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
@@ -35,7 +37,8 @@ public class PlaceEntity {
     @Column(name = "status")
     private Object status;
     @Basic
-    @Column(name = "last_modified"/*, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"*/)
+    @UpdateTimestamp
+    @Column(name = "last_modified")
     private Timestamp lastModified;
     @Basic
     @Column(name = "description")
@@ -56,7 +59,8 @@ public class PlaceEntity {
     @Column(name = "coordinates")
     private Object coordinates;
     @Basic
-    @Column(name = "created_at"/*, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP", updatable = false*/)
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
 
     public int getPlaceId() {

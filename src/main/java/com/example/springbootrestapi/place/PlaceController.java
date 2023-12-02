@@ -85,8 +85,8 @@ public class PlaceController {
         try {
             placeService.updatePlace(id, updatedPlace);
             return ResponseEntity.status(HttpStatus.OK).body("Updated place with id " + id);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);
+        } catch (RequestValidationException e) {
+            throw new RequestValidationException("Validation failed for the request body");
         }
     }
 

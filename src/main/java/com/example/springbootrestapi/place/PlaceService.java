@@ -2,6 +2,7 @@ package com.example.springbootrestapi.place;
 
 import com.example.springbootrestapi.exception.ConflictException;
 import com.example.springbootrestapi.exception.RequestValidationException;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -141,6 +142,7 @@ public class PlaceService {
                 .toList();
     }
 
+    @Transactional
     public PlaceEntity updatePlace(Integer id, @Valid PlaceEntity updatedPlace) {
         Optional<PlaceEntity> place = placeRepository.findById(id);
         if (place.isPresent()) {
@@ -158,7 +160,7 @@ public class PlaceService {
 
             return placeRepository.save(existingPlace);
         }
-        return null;
+        throw new RequestValidationException("Not a valid request");
     }
 
     public boolean placeExists(String placeName) {
@@ -166,6 +168,7 @@ public class PlaceService {
                 .anyMatch(place -> place.getName().equalsIgnoreCase(placeName));
     }
 
+    @Transactional
     public List<PlaceEntity> createPlace(PlaceEntity newPlace) {
         if (!placeExists(newPlace.getName())) {
             placeRepository.save(newPlace);
@@ -173,7 +176,7 @@ public class PlaceService {
         else {
             throw new ConflictException("Place already exists");
         }
-        throw new RequestValidationException("This is not a valid request");
+        return null;
     }
 
     public Optional<PlaceEntity> deletePlace(Integer id) {
