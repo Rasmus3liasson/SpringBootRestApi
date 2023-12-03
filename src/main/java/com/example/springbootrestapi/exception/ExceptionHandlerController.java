@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -31,6 +32,11 @@ public class ExceptionHandlerController {
     @ExceptionHandler(ConflictException.class)
     public ProblemDetail handleConflictException(ConflictException ex) {
         return buildProblemDetail(HttpStatus.CONFLICT, "Conflict", ex.getLocalizedMessage(), ex.getMessage(), "https://example.com/documentation/errors/conflict");
+
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ProblemDetail handleValidationException(MethodArgumentNotValidException ex) {
+        return buildProblemDetail(HttpStatus.BAD_REQUEST, "Validation failed", ex.getLocalizedMessage(), ex.getMessage(), "https://example.com/documentation/errors/validation-failed");
     }
 
     private ProblemDetail buildProblemDetail(HttpStatus status, String title, String detail, String exMessage,String errorUrl) {

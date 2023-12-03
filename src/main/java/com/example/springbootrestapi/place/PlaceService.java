@@ -50,9 +50,6 @@ public class PlaceService {
     }
 
 
-
-
-
     public List<PlaceEntity> getAllPlaces() {
         if (isAuthenticated()) {
             return placeRepository.findAll();
@@ -74,10 +71,9 @@ public class PlaceService {
 
     public List<PlaceEntity> getPlacesByCategory(Integer category) {
         if (isAuthenticated()) {
-        return placeRepository.findAll().stream().filter(p -> p.getCategoryId() == category).toList();
+            return placeRepository.findAll().stream().filter(p -> p.getCategoryId() == category).toList();
 
-        }
-        else {
+        } else {
             return placeRepository.findAll().stream()
                     .filter(p -> p.getCategoryId() == category && "public".equals(p.getStatus()))
                     .toList();
@@ -85,7 +81,7 @@ public class PlaceService {
     }
 
     public List<PlaceEntity> getPlacesRelatedToUser() {
-            String userId = getCurrentUserId();
+        String userId = getCurrentUserId();
         if (isAuthenticated()) {
             return placeRepository.findAll().stream().filter(p -> p.getUserId().toLowerCase().equals(userId)).toList();
         }
@@ -103,29 +99,6 @@ public class PlaceService {
             throw new IllegalStateException("Not authenticated");
         }
     }
-
-/*    public List<PlaceEntity> getPlacesRelatedToUser()  {
-        if (isAuthenticatedWithAdminRole()){
-        return placeRepository.findAll().stream().filter(p -> p.getUserId().equals("admin")).toList();
-        }
-        throw new IllegalStateException("No related places");
-
-    }*/
-
- /*   public String getCurrentUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-
-
-        if (auth != null && auth.isAuthenticated()) {
-            Object principal = auth.getPrincipal();
-
-            if (principal instanceof UserDetails) {
-                UserDetails userDetails = (UserDetails) principal;
-                return userDetails.getUsername();
-            }
-        }
-        throw new RuntimeException("User isn't signed in");
-    }*/
 
     public List<PlaceEntity> getPlacesInArea(double latitude, double longitude, double radius) {
         double minLat = latitude - radius;
@@ -172,8 +145,7 @@ public class PlaceService {
     public List<PlaceEntity> createPlace(PlaceEntity newPlace) {
         if (!placeExists(newPlace.getName())) {
             placeRepository.save(newPlace);
-        }
-        else {
+        } else {
             throw new ConflictException("Place already exists");
         }
         return null;
