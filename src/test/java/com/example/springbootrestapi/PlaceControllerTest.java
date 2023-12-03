@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = PlaceController.class)
 @Import(SpringSecurityConfig.class)
-@ComponentScan(basePackages = "com.example.springbootrestapi.mapper")
+@ComponentScan(basePackages = {"com.example.springbootrestapi.mapper", "com.example.springbootrestapi.config"})
 public class PlaceControllerTest {
 
     @Autowired
@@ -80,9 +80,9 @@ public class PlaceControllerTest {
         when(placeService.getPlaceById(placeId)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/location/{placeId}", placeId))
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON)).andExpect(responseMapper.containsError(
-                        "Not a valid request", String.format("Place with id %d does not exist", placeId)));
+                        "Couldn't' find object", String.format("Place with id %d does not exist", placeId)));
 
 
     }
